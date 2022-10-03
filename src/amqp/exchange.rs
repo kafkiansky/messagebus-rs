@@ -51,14 +51,14 @@ impl<'a> Exchange<'a> {
 
 #[derive(Debug)]
 pub struct Bind<'a> {
-    pub exchange: &'a str,
+    pub exchange: Exchange<'a>,
     pub routing_key: &'a str,
     pub no_wait: bool,
     pub arguments: HashMap<String, String>,
 }
 
 impl<'a> Bind<'a> {
-    pub fn new(exchange: &'a str, routing_key: &'a str) -> Self {
+    pub fn new(exchange: Exchange<'a>, routing_key: &'a str) -> Self {
         Self {
             exchange,
             routing_key,
@@ -109,8 +109,10 @@ mod tests {
 
     #[test]
     fn new_bind() {
-        let bind = Bind::new("test_exchange", "test_routing_key");
-        assert_eq!("test_exchange", bind.exchange);
+        let exchange = Exchange::new("test_exchange", ExchangeType::Direct);
+
+        let bind = Bind::new(exchange, "test_routing_key");
+        assert_eq!("test_exchange", bind.exchange.name);
         assert_eq!("test_routing_key", bind.routing_key);
         assert_eq!(false, bind.no_wait);
         assert_eq!(0, bind.arguments.len());
